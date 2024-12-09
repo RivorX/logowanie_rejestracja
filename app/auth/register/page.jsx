@@ -7,6 +7,7 @@ export default function Register() {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [message, setMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false); // Stan do śledzenia, czy rejestracja zakończyła się sukcesem
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,15 +23,18 @@ export default function Register() {
 
             if (res.ok) {
                 setMessage('Rejestracja zakończona sukcesem');
+                setIsSuccess(true); // Ustawienie sukcesu
                 setEmail('');
                 setPassword('');
                 setUsername('');
             } else {
                 const errorData = await res.json();
                 setMessage(`Błąd: ${errorData.error || 'Niepowodzenie rejestracji'}`);
+                setIsSuccess(false); // Ustawienie błędu
             }
         } catch (error) {
             setMessage(`Błąd: ${error.message}`);
+            setIsSuccess(false); // Ustawienie błędu
         }
     };
 
@@ -101,7 +105,7 @@ export default function Register() {
                 </button>
             </form>
             {message && (
-                <p style={{ marginTop: '1rem', color: res.ok ? 'green' : 'red' }}>
+                <p style={{ marginTop: '1rem', color: isSuccess ? 'green' : 'red' }}>
                     {message}
                 </p>
             )}
