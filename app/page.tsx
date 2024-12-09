@@ -1,8 +1,8 @@
-// app/page.jsx
+// app/page.tsx
 'use client';
 
 import { useRouter } from 'next/navigation'; // Hook do nawigacji w Next.js
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"; // Komponent Button z biblioteki UI
 
 export default function Home() {
   const router = useRouter();
@@ -16,19 +16,19 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
-      <h1>Welcome to Our Application</h1>
-      <p>To access your account, please log in or register.</p>
-      <div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <h1 className="text-4xl font-bold mb-6">Welcome to Our Application</h1>
+      <p className="text-lg mb-8">To access your account, please log in or register.</p>
+      <div className="flex space-x-4">
         <Button 
           onClick={goToLogin} 
-          style={{ margin: '10px', padding: '10px 20px', cursor: 'pointer' }}
+          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Login
         </Button>
         <Button 
           onClick={goToRegister} 
-          style={{ margin: '10px', padding: '10px 20px', cursor: 'pointer' }}
+          className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
         >
           Register
         </Button>
