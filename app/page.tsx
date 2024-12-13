@@ -1,8 +1,8 @@
-// app/page.tsx
 'use client';
 
 import { useRouter } from 'next/navigation'; // Hook do nawigacji w Next.js
 import { Button } from "@/components/ui/button"; // Komponent Button z biblioteki UI
+import { useToast } from "@/hooks/use-toast"; // Importujemy hook useToast
 
 export default function Home() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function Home() {
   const goToRegister = () => {
     router.push('/auth/register'); // Przekierowanie na stronę rejestracji
   };
+  const { toast } = useToast()
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -32,6 +33,16 @@ export default function Home() {
         >
           Register
         </Button>
+        <Button
+      onClick={() => {
+        toast({
+          title: "Scheduled: Catch up",
+          description: "Friday, February 10, 2023 at 5:57 PM",
+        })
+      }}
+    >
+      Show Toast
+    </Button>
       </div>
     </div>
   );

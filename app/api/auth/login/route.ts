@@ -1,3 +1,4 @@
+// app/api/auth/login/route.ts
 "use server";
 
 import { prisma } from '@/lib/prisma';
@@ -6,9 +7,14 @@ import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 import { serialize } from 'cookie';
 
-export async function POST(req) {
+interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export async function POST(req: Request) {
     try {
-        const { email, password } = await req.json();
+        const { email, password }: LoginRequest = await req.json();
 
         // Sprawdzenie, czy użytkownik istnieje
         const user = await prisma.user.findUnique({
@@ -28,8 +34,8 @@ export async function POST(req) {
 
         // Tworzenie tokena JWT (dodajemy dane takie jak userId i username)
         const token = jwt.sign(
-            { userId: user.id, username: user.username },  // Możesz dodać inne dane użytkownika, jeśli są potrzebne
-            process.env.JWT_SECRET, 
+            { userId: user.id, username: user.username },
+            process.env.JWT_SECRET!,
             { expiresIn: '1h' } // Token wygasa po godzinie
         );
 
@@ -37,7 +43,7 @@ export async function POST(req) {
         const cookie = serialize('token', token, {
             httpOnly: true, // Token jest dostępny tylko przez HTTP, nie w JavaScript
             secure: process.env.NODE_ENV === 'production', // Tylko w środowisku produkcyjnym
-            sameSite: 'Strict', // Ochrona przed CSRF
+            sameSite: 'strict', // Ochrona przed CSRF
             path: '/', // Ciasteczko dostępne w całej aplikacji
             maxAge: 3600, // Token ważny przez godzinę
         });
@@ -46,14 +52,13 @@ export async function POST(req) {
         const response = NextResponse.json({
             message: 'Login successful',
             userId: user.id,
-            username: user.username,  // Możesz dodać dane użytkownika do odpowiedzi
+            username: user.username, // Możesz dodać dane użytkownika do odpowiedzi
         });
 
         // Dodanie ciasteczka do odpowiedzi
         response.headers.set('Set-Cookie', cookie);
 
         return response;
-
     } catch (error) {
         console.error('Błąd logowania:', error); // Dodanie logowania błędów dla lepszego debugowania
         return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500 });

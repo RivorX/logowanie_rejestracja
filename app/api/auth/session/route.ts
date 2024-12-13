@@ -1,11 +1,12 @@
+// app/api/auth/session/route.ts
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 export async function GET() {
     try {
-        // Asynchroniczne pobranie ciasteczek
-        const cookieStore = await cookies(); // Użyj await dla cookies()
+        // Pobranie ciasteczek
+        const cookieStore = cookies();
         const token = cookieStore.get('token')?.value;
 
         if (!token) {
@@ -13,12 +14,16 @@ export async function GET() {
         }
 
         // Zweryfikuj token JWT
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            throw new Error('JWT_SECRET is not defined');
+        }
+        const verified = jwt.verify(token, secret) as { username: string };
 
         // Przypisanie danych użytkownika z tokenu do odpowiedzi
         return NextResponse.json({ user: { username: verified.username } }, { status: 200 });
     } catch (error) {
+        console.error('Błąd sesji:', error);
         return NextResponse.json({ error: 'Nieprawidłowy token' }, { status: 401 });
     }
 }
-

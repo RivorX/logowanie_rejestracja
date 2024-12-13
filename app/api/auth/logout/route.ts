@@ -1,4 +1,5 @@
-// app/api/auth/logout/route.js
+// app/api/auth/logout/route.ts
+"use server";
 import { NextResponse } from 'next/server';
 
 export async function POST() {
