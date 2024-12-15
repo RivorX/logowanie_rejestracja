@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 export async function GET() {
     try {
         // Pobranie ciasteczek
-        const cookieStore = cookies();
+        const cookieStore = await cookies();
         const token = cookieStore.get('token')?.value;
 
         if (!token) {
@@ -18,7 +18,8 @@ export async function GET() {
         if (!secret) {
             throw new Error('JWT_SECRET is not defined');
         }
-        const verified = jwt.verify(token, secret) as { username: string };
+
+        const verified = jwt.verify(token, secret) as jwt.JwtPayload;
 
         // Przypisanie danych użytkownika z tokenu do odpowiedzi
         return NextResponse.json({ user: { username: verified.username } }, { status: 200 });
