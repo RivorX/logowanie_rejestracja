@@ -1,8 +1,8 @@
 // app/auth/login/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,8 +28,18 @@ export default function LoginPage() {
 
   const { handleSubmit, control } = form;
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const router = useRouter();
+  const router = useRouter(); // Działa tylko w trybie klienta
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+
+  const [redirectUrl, setRedirectUrl] = useState<string>('/dashboard'); 
+
+  useEffect(() => {
+    const queryRedirect = searchParams.get('redirect');
+    if (queryRedirect) {
+      setRedirectUrl(queryRedirect);
+    }
+  }, [searchParams]);
 
   // Mutacja logowania
   const loginMutation = useMutation({
@@ -55,7 +65,7 @@ export default function LoginPage() {
         toast({ title: 'Zalogowano pomyślnie', description: "Przekierowano do strony głównej",});
 
         // Przekierowanie na stronę dashboard po udanym logowaniu
-        router.push('/dashboard');
+        router.push(redirectUrl); 
     },
     onError: (error: any) => {
         setErrorMessage(error.message || 'Błąd logowania');
